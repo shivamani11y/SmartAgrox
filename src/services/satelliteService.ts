@@ -3,46 +3,65 @@ import axios from 'axios';
 // This would come from environment variables in a real implementation
 const API_BASE_URL = 'http://localhost:8000/api';
 
+// Add this satellite API implementation
+const satelliteApi = {
+  getNdviData: async (boundaries, date) => {
+    // In a real implementation, this would make an API call
+    // For now, we'll simulate a network request
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Return mock data for now
+    return {
+      data: generateFallbackNdviData(date)
+    };
+  }
+};
+
 /**
  * Fetch NDVI data for a field based on its boundaries and a date
  */
-export const fetchNdviData = async (boundaries, date) => {
-  try {
-    // For the prototype, we'll simulate the API call with a delay
-    // In a real implementation, this would call the FastAPI backend
-    
-    console.log('Fetching NDVI data with:', { boundaries, date });
-    
-    // Simulate network request
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Mock response - in a real implementation this would be:
-    // const response = await axios.post(`${API_BASE_URL}/ndvi`, {
-    //   boundaries,
-    //   date: date.toISOString().split('T')[0]
-    // });
-    
-    // Generate some realistic mock data
-    const mockData = generateMockNdviData(date);
-    
-    // Also fetch historical data
-    const historicalData = await fetchHistoricalNdviData(
-      boundaries,
-      new Date(date.getFullYear() - 1, date.getMonth(), 1),
-      date
-    );
+
+// Rename to indicate this is a fallback, not the primary source
+const generateFallbackNdviData = (date) => {
+  // Keep the existing mock data generation as fallback
+  // Generate a realistic value based on the month (season)
+  const month = date.getMonth();
+  const seasonFactor = 0.5 + 0.3 * Math.sin((month - 2) * Math.PI / 6); // Peak in summer
+  
+  // Add some randomness
+  const baseNdvi = seasonFactor + (Math.random() * 0.2 - 0.1);
+  const avgNdvi = Math.max(0.1, Math.min(0.9, baseNdvi));
+  
+  // Generate min/max values around the average
+  const minNdvi = Math.max(0.05, avgNdvi - 0.1 - Math.random() * 0.1);
+  const maxNdvi = Math.min(0.95, avgNdvi + 0.1 + Math.random() * 0.1);
+  
+  // Generate zones
+  const zoneCount = 5;
+  const zoneStep = (maxNdvi - minNdvi) / zoneCount;
+  
+  const zones = Array.from({ length: zoneCount }, (_, i) => {
+    const min = minNdvi + i * zoneStep;
+    const max = minNdvi + (i + 1) * zoneStep;
+    const average = (min + max) / 2 + (Math.random() * 0.02 - 0.01);
+    const count = Math.floor(100 + Math.random() * 200);
     
     return {
-      current: mockData,
-      historical: historicalData.ndvi_values.map(value => ({
-        averageNdvi: value
-      })),
-      historicalDates: historicalData.dates
+      min,
+      max,
+      average,
+      count,
+      percentage: count / 1000 * 100
     };
-  } catch (error) {
-    console.error('Error fetching NDVI data:', error);
-    throw error;
-  }
+  });
+  
+  return {
+    averageNdvi: avgNdvi,
+    minNdvi: minNdvi,
+    maxNdvi: maxNdvi,
+    zones: zones,
+    date: date.toISOString()
+  };
 };
 
 /**
@@ -180,4 +199,24 @@ const getBoundingBoxFromBoundaries = (boundaries) => {
     min_lat: Math.min(...lats),
     max_lat: Math.max(...lats)
   };
-}; 
+};
+
+// Add the missing function export
+export const fetchNdviData = async (farmId: string, date?: Date) => {
+  // Implementation for fetching NDVI data
+  // This should return NDVI (Normalized Difference Vegetation Index) data for the specified farm
+  
+  // Example implementation:
+  return {
+    farmId,
+    date: date || new Date(),
+    ndviValues: [
+      // Sample NDVI data points
+      { position: { lat: 0, lng: 0 }, value: 0.75 },
+      { position: { lat: 0.01, lng: 0.01 }, value: 0.68 },
+      // Add more data points as needed
+    ],
+    averageNdvi: 0.72,
+    coverage: 95 // percentage of farm covered
+  };
+};
