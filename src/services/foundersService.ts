@@ -69,13 +69,20 @@ const foundersData: FounderProfile[] = [
     role: "Co-Founder & UI/UX Designer",
     linkedin: "https://www.linkedin.com/in/preetham-jakkam/",
     linkedinUsername: "preetham jakkam",
-    bio: "Creative designer with an eye for detail and aesthetics. Specializes in creating visually appealing interfaces and graphics that enhance the user experience.",
+    bio: "You have hands-on experience across AI/ML, full-stack development, system programming, and algorithm design, and you actively work on real-world, impact-driven projects rather than just academic ones. Your interests span from low-level programming (8086, 8051 assembly) to modern AI systems, React-based applications, and scalable software architectures.Creative designer with an eye for detail and aesthetics. Specializes in creating visually appealing interfaces and graphics that enhance the user experience.",
     image: "/founders/founder3.jpg",
     expertise: [
       "UI/UX Design",
       "CSS & Animation",
       "Visual Design",
-      "User Experience"
+      "User Experience",
+      "AI/ML",
+      "Full Stack Development",
+      "System Programming",
+      "Algorithm Design",
+      "8086, 8051 Assembly",
+      "React-based Applications",
+      "Scalable Software Architectures"
     ],
     isFounder: true
   }

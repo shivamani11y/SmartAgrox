@@ -69,36 +69,36 @@ const sidebarItems: SidebarItem[] = [
     translationKey: 'common.dashboard',
     category: 'main'
   },
-  { 
-    name: 'YieldXPredictor', 
-    icon: TrendingUp, 
-    href: '/yield-prediction',
-    color: 'bg-gradient-to-r from-purple-500/30 to-indigo-500/30 text-purple-700 border-2 border-purple-300/50',
-    translationKey: 'common.yieldPrediction',
-    category: 'main',
-    featured: true,
-    badge: '🔮 AI',
-    description: '📊 ML-Powered Yield Forecasting with Multimodal Data',
-  },
-  { 
-    name: 'AgriBuddy', 
-    icon: Sprout, 
-    href: '/agribuddy',
-    color: 'bg-gradient-to-r from-green-500/30 to-blue-500/30 text-green-700 border-2 border-green-300/50',
-    translationKey: 'common.agriBuddy',
-    category: 'main',
-    featured: true,
-    badge: '🚀 NEW',
-    description: '🤖 AI Crop Journey Assistant - Your Smart Farming Companion',
-  },
-  { 
-    name: 'Farm', 
-    icon: MapPin, 
-    href: '/farm',
-    color: 'bg-agri-green/10 text-agri-green',
-    translationKey: 'common.farm',
-    category: 'main'
-  },
+  // { 
+  //   name: 'YieldXPredictor', 
+  //   icon: TrendingUp, 
+  //   href: '/yield-prediction',
+  //   color: 'bg-gradient-to-r from-purple-500/30 to-indigo-500/30 text-purple-700 border-2 border-purple-300/50',
+  //   translationKey: 'common.yieldPrediction',
+  //   category: 'main',
+  //   featured: true,
+  //   badge: '🔮 AI',
+  //   description: '📊 ML-Powered Yield Forecasting with Multimodal Data',
+  // },
+  // { 
+  //   name: 'AgriBuddy', 
+  //   icon: Sprout, 
+  //   href: '/agribuddy',
+  //   color: 'bg-gradient-to-r from-green-500/30 to-blue-500/30 text-green-700 border-2 border-green-300/50',
+  //   translationKey: 'common.agriBuddy',
+  //   category: 'main',
+  //   featured: true,
+  //   badge: '🚀 NEW',
+  //   description: '🤖 AI Crop Journey Assistant - Your Smart Farming Companion',
+  // },
+  // { 
+  //   name: 'Farm', 
+  //   icon: MapPin, 
+  //   href: '/farm',
+  //   color: 'bg-agri-green/10 text-agri-green',
+  //   translationKey: 'common.farm',
+  //   category: 'main'
+  // },
   { 
     name: 'AgroLab', 
     icon: FlaskConical, 
@@ -134,22 +134,22 @@ const sidebarItems: SidebarItem[] = [
     translationKey: 'common.cropAdvisor',
     category: 'tools'
   },
-  { 
-    name: 'Market', 
-    icon: BarChart2, 
-    href: '/market',
-    color: 'bg-agri-amber/10 text-agri-amber',
-    translationKey: 'common.market',
-    category: 'tools'
-  },
-  { 
-    name: 'Weather', 
-    icon: CloudSun, 
-    href: '/weather',
-    color: 'bg-agri-lightBlue/10 text-agri-lightBlue',
-    translationKey: 'common.weather',
-    category: 'tools'
-  },
+  // { 
+  //   name: 'Market', 
+  //   icon: BarChart2, 
+  //   href: '/market',
+  //   color: 'bg-agri-amber/10 text-agri-amber',
+  //   translationKey: 'common.market',
+  //   category: 'tools'
+  // },
+  // { 
+  //   name: 'Weather', 
+  //   icon: CloudSun, 
+  //   href: '/weather',
+  //   color: 'bg-agri-lightBlue/10 text-agri-lightBlue',
+  //   translationKey: 'common.weather',
+  //   category: 'tools'
+  // },
   { 
     name: 'AgriBot', 
     icon: Bot, 
@@ -158,14 +158,14 @@ const sidebarItems: SidebarItem[] = [
     translationKey: 'common.agriBot',
     category: 'info'
   },
-  { 
-    name: 'Founders', 
-    icon: Users, 
-    href: '/founders',
-    color: 'bg-gradient-to-r from-amber-400/30 to-amber-500/40 text-amber-100',
-    translationKey: 'common.founders',
-    category: 'info'
-  },
+  // { 
+  //   name: 'Founders', 
+  //   icon: Users, 
+  //   href: '/founders',
+  //   color: 'bg-gradient-to-r from-amber-400/30 to-amber-500/40 text-amber-100',
+  //   translationKey: 'common.founders',
+  //   category: 'info'
+  // },
 ];
 
 const Sidebar = () => {
@@ -456,7 +456,6 @@ const SidebarContent = ({
               exit={{ opacity: 0 }}
               className="ml-2 text-xl font-semibold text-white"
             >
-              SmartAgroX
             </motion.span>
           }
         </div>

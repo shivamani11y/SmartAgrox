@@ -8,7 +8,7 @@ if (!GEMINI_API_KEY) {
 
 export const API_CONFIG = {
   GEMINI_API_KEY,
-  GEMINI_MODEL: 'gemini-2.0-flash',
+  GEMINI_MODEL: 'gemini-flash-lite-latest',
   GEMINI_ENDPOINT: 'https://generativelanguage.googleapis.com/v1beta/models',
 } as const;
 

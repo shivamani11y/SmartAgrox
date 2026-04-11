@@ -31,7 +31,6 @@
     "tomorrow": "Tomorrow",
     "medium": "Medium",
     "refreshing": "Refreshing...",
-    "cropAdvisor": "Crop Advisor",
     "overview": "Overview",
     "viewFullReport": "View Full Report",
     "help": "Help",
@@ -198,7 +197,9 @@
     "healthScoreDescription": "Your soil health score",
     "overview": "Overview",
     "viewFullReport": "View Full Report",
-    "viewFullReportDescription": "View Full Report"
+    "viewFullReportDescription": "View Full Report",
+    "checkSoilHealthDescription": "Check soil health, nutrients, and get personalized recommendations",
+    "testSoil": "Test Soil"
   },
   "cropAdvisor": {
     "title": "Crop Advisor",
@@ -264,7 +265,6 @@
     "scanCrops": "Scan Crops",
     "uploadPhotos": "Upload Photos",
     "uploadImages": "Upload Images",
-    "takePhoto": "Take Photo",
     "scanCropsDescription": "Scan and identify crop diseases with AI-powered analysis",
     "analyzeNow": "Analyze Now",
     "howItWorks": {
@@ -275,6 +275,11 @@
       "step3": "Our AI will analyze the image and identify any diseases present",
       "step4": "Review the results and follow the recommended treatment options"
     }
+  },
+  "pestAnalysis": {
+    "title": "Pest Analysis",
+    "detectPestsDescription": "Identify pests and get recommendations for pest management",
+    "detectPests": "Detect Pests"
   },
   "market": {
     "title": "Market Prices",
@@ -393,7 +398,7 @@
   "sidebar": {
     "categories": {
       "main": "Main",
-      "tools": "Tools", 
+      "tools": "Tools",
       "info": "Information"
     },
     "featured": "Featured",
@@ -481,7 +486,7 @@
     "clickToUpload": "Click to upload",
     "jpgPngUpTo5MB": "JPG, PNG up to 5MB",
     "analyzeCropHealth": "Analyze Crop Health",
-    "viewAndManageYourFarms": "View and Manage Your Farms"
+    "viewAndManageFarms": "View and Manage Your Farms"
   },
   "weather": {
     "sunny": "Sunny",

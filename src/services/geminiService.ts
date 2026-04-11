@@ -14,36 +14,34 @@ export const initGeminiClient = async (apiKey: string): Promise<boolean> => {
     console.error('Gemini API key is required');
     return false;
   }
-  
+
   try {
     console.log('Initializing Gemini client with API key...');
     const genAI = new GoogleGenerativeAI(apiKey);
-    
-    // Try multiple models in order of preference (high-end to standard)
+
+    // Try multiple models in order of preference (fast to standard)
     const modelOptions = [
-      "gemini-2.5-pro",
-      "gemini-2.0-pro", 
+      "gemini-2.5-flash",
+      "gemini-2.5-flash-lite",
       "gemini-2.0-flash",
-      "gemini-1.5-pro",
-      "gemini-1.5-flash",
       "gemini-2.0-flash-lite"
     ];
-    
+
     let modelInitialized = false;
     let lastError: any = null;
-    
+
     for (const modelName of modelOptions) {
       try {
         console.log(`Attempting to initialize model: ${modelName}`);
-        
+
         // Check connectivity with a simple ping request
-        const pingModel = genAI.getGenerativeModel({ 
+        const pingModel = genAI.getGenerativeModel({
           model: modelName,
           generationConfig: {
             maxOutputTokens: 10,
           },
         });
-        
+
         // Try a simple ping to verify connectivity
         const pingPromise = pingModel.generateContent("test")
           .then(result => {
@@ -55,17 +53,17 @@ export const initGeminiClient = async (apiKey: string): Promise<boolean> => {
             console.error(`${modelName} API connectivity test failed:`, error);
             throw error;
           });
-        
+
         // Set a timeout for the ping test
         const timeoutPromise = new Promise<never>((_, reject) => {
           setTimeout(() => reject(new Error(`${modelName} API connectivity test timed out`)), 8000);
         });
-        
+
         // Race the ping against the timeout
         await Promise.race([pingPromise, timeoutPromise]);
-        
+
         // If we get here, the ping was successful, so initialize the full model
-        geminiModel = genAI.getGenerativeModel({ 
+        geminiModel = genAI.getGenerativeModel({
           model: modelName,
           generationConfig: {
             temperature: 0.4,
@@ -92,7 +90,7 @@ export const initGeminiClient = async (apiKey: string): Promise<boolean> => {
             },
           ],
         });
-        
+
         console.log(`Gemini client initialized successfully with model: ${modelName}`);
         modelInitialized = true;
         break;
@@ -102,11 +100,11 @@ export const initGeminiClient = async (apiKey: string): Promise<boolean> => {
         continue;
       }
     }
-    
+
     if (!modelInitialized) {
       throw lastError || new Error('All Gemini models failed to initialize');
     }
-    
+
     return true;
   } catch (error) {
     console.error('Failed to initialize Gemini client:', error);
@@ -128,7 +126,7 @@ export const initGeminiClient = async (apiKey: string): Promise<boolean> => {
  * @returns The generated response text
  */
 export const generateTextResponse = async (
-  prompt: string, 
+  prompt: string,
   options: {
     maxRetries?: number;
     timeout?: number;
@@ -140,14 +138,14 @@ export const generateTextResponse = async (
     timeout = 8000, // Much shorter default timeout - 8 seconds
     temperature = 0.2, // Lower temperature for more consistent output
   } = options;
-  
+
   if (!geminiModel) {
     console.error('Gemini client not initialized');
     return 'Error: AI service not available. Please try again later.';
   }
-  
+
   console.log('Generating text response for prompt:', prompt.substring(0, 100) + (prompt.length > 100 ? '...' : ''));
-  
+
   // Create a promise that rejects after the timeout
   const timeoutPromise = new Promise<never>((_, reject) => {
     const id = setTimeout(() => {
@@ -155,10 +153,10 @@ export const generateTextResponse = async (
       reject(new Error(`Gemini API request timed out after ${timeout}ms`));
     }, timeout);
   });
-  
+
   let lastError: any = null;
   let retryCount = 0;
-  
+
   while (retryCount <= maxRetries) {
     try {
       // Race the API call against the timeout
@@ -173,51 +171,51 @@ export const generateTextResponse = async (
             candidateCount: 1, // Only generate one candidate
           },
         });
-        
+
         const response = result.response;
         const text = response.text();
-        
+
         // Verify we got a meaningful response
         if (!text || text.trim().length === 0) {
           throw new Error('Empty response from Gemini API');
         }
-        
+
         console.log('Successfully generated response with length:', text.length);
         return text;
       };
-      
+
       // Race against timeout
       return await Promise.race([generatePromise(), timeoutPromise]);
     } catch (error: any) {
       lastError = error;
       console.error(`Attempt ${retryCount + 1}/${maxRetries + 1} failed:`, error);
-      
+
       if (error.message) {
         console.error('Error message:', error.message);
       }
-      
+
       // Check for specific error types
       if (error.message?.includes('safety')) {
         console.warn('Content filtered due to safety settings');
         return 'I cannot provide a response to that query due to content safety restrictions. Please try asking something else.';
       }
-      
+
       // If this was our last retry, throw the error
       if (retryCount >= maxRetries) {
         break;
       }
-      
+
       // Exponential backoff before retry
       const delay = Math.min(1000 * Math.pow(2, retryCount), 8000);
       console.log(`Retrying in ${delay}ms...`);
       await new Promise(resolve => setTimeout(resolve, delay));
-      
+
       retryCount++;
     }
   }
-  
+
   console.error('All retries failed:', lastError);
-  
+
   // Provide a helpful error message based on the type of error
   if (lastError?.message?.includes('timed out')) {
     return 'Sorry, the AI service took too long to respond. Please try again later with a simpler request.';
@@ -226,7 +224,7 @@ export const generateTextResponse = async (
   } else if (lastError?.message?.includes('invalid') || lastError?.message?.includes('safety')) {
     return 'Your request could not be processed due to content restrictions or invalid input. Please modify your request and try again.';
   }
-  
+
   return 'Sorry, I encountered an error processing your request. Please try again later.';
 };
 
@@ -241,14 +239,14 @@ export const analyzeImage = async (imageData: string, prompt: string): Promise<s
     console.error('Gemini client not initialized');
     return 'Error: AI service not available. Please try again later.';
   }
-  
+
   try {
     console.log('Analyzing image with prompt:', prompt);
-    
+
     // Remove the data URL prefix if present
     let base64Image = imageData;
     let mimeType = 'image/jpeg';
-    
+
     if (imageData.includes('data:')) {
       const matches = imageData.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
       if (matches && matches.length === 3) {
@@ -258,9 +256,9 @@ export const analyzeImage = async (imageData: string, prompt: string): Promise<s
         base64Image = imageData.split('base64,')[1] || imageData;
       }
     }
-    
+
     console.log(`Processing image with MIME type: ${mimeType}`);
-    
+
     // Create the content parts with image and text
     const imagePart = {
       inlineData: {
@@ -268,12 +266,12 @@ export const analyzeImage = async (imageData: string, prompt: string): Promise<s
         mimeType: mimeType
       }
     };
-    
+
     // Combine image and prompt for multimodal input
     const result = await geminiModel.generateContent([imagePart, prompt]);
     const response = result.response;
     const text = response.text();
-    
+
     console.log('Successfully analyzed image, response length:', text.length);
     return text;
   } catch (error) {
@@ -354,11 +352,11 @@ export const analyzeSoil = async (imageData: string): Promise<any> => {
   while (retryCount <= maxRetries) {
     try {
       console.log(`Soil analysis attempt ${retryCount + 1}/${maxRetries + 1}`);
-      
-      const mimeType = imageData.startsWith('data:image/png') ? 'image/png' : 
-                       imageData.startsWith('data:image/jpeg') ? 'image/jpeg' : 
-                       imageData.startsWith('data:image/jpg') ? 'image/jpeg' : 'image/png';
-      
+
+      const mimeType = imageData.startsWith('data:image/png') ? 'image/png' :
+        imageData.startsWith('data:image/jpeg') ? 'image/jpeg' :
+          imageData.startsWith('data:image/jpg') ? 'image/jpeg' : 'image/png';
+
       const imagePart = {
         inlineData: {
           data: imageData.split(',')[1],
@@ -374,45 +372,45 @@ export const analyzeSoil = async (imageData: string): Promise<any> => {
           maxOutputTokens: 1024,
         },
       });
-      
+
       const response = result.response;
       let text = response.text();
-      
+
       if (!text || text.trim().length === 0) {
         throw new Error('Empty response from Gemini');
       }
-      
+
       console.log('Soil analysis response length:', text.length);
-      
+
       // Clean up the response
       text = text.trim();
       text = text.replace(/^```json\s*/i, '').replace(/\s*```$/i, '');
       text = text.replace(/^```\s*/i, '').replace(/\s*```$/i, '');
-      
+
       // Find JSON object boundaries
       const startIndex = text.indexOf('{');
       const lastIndex = text.lastIndexOf('}');
-      
+
       if (startIndex === -1 || lastIndex === -1 || startIndex >= lastIndex) {
         throw new Error('No valid JSON object found in response');
       }
-      
+
       // Extract the JSON part
       const jsonText = text.substring(startIndex, lastIndex + 1);
-      
+
       // Validate basic JSON structure
       if (!jsonText.includes('"soilPresent"') || !jsonText.includes('"soilType"')) {
         throw new Error('Response missing required soil fields');
       }
-      
+
       // Parse and validate
       const analysisResult = JSON.parse(jsonText);
-      
+
       // Validate required fields
       if (typeof analysisResult.soilPresent !== 'boolean') {
         throw new Error('Invalid soil analysis structure');
       }
-      
+
       // Normalize and validate fields
       const validatedResult = {
         soilPresent: Boolean(analysisResult.soilPresent),
@@ -436,20 +434,20 @@ export const analyzeSoil = async (imageData: string): Promise<any> => {
           drainage: ['Poor', 'Moderate', 'Good'].includes(analysisResult.properties?.drainage) ? analysisResult.properties.drainage : 'Good'
         }
       };
-      
+
       console.log('Soil analysis completed successfully:', validatedResult.soilType);
       return validatedResult;
-      
+
     } catch (error: any) {
       console.error(`Soil analysis attempt ${retryCount + 1} failed:`, error.message);
-      
+
       if (retryCount >= maxRetries) {
         console.error('All soil analysis attempts failed');
-        
+
         // Handle specific API errors
         let fallbackReason = 'Analysis Failed - Please Try Again';
         let fallbackRecommendations = 'Unable to analyze soil image. Please try again with a clearer image showing soil surface.';
-        
+
         if (error.message && error.message.includes('429')) {
           fallbackReason = 'API Quota Exceeded';
           fallbackRecommendations = 'Daily API limit reached. Please try again later or upgrade your plan for unlimited analysis.';
@@ -461,7 +459,7 @@ export const analyzeSoil = async (imageData: string): Promise<any> => {
           fallbackReason = 'Content Safety Issue';
           fallbackRecommendations = 'Image content was flagged. Please ensure the image shows only soil and try again.';
         }
-        
+
         return {
           soilPresent: true,
           soilType: fallbackReason,
@@ -474,7 +472,7 @@ export const analyzeSoil = async (imageData: string): Promise<any> => {
           properties: { ph: 6.8, texture: 'Unknown', waterRetention: 50, drainage: 'Moderate' }
         };
       }
-      
+
       // Wait before retry with exponential backoff
       const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
       await new Promise(resolve => setTimeout(resolve, delay));
@@ -501,7 +499,7 @@ export const analyzeCropDisease = async (imageData: string): Promise<{
       disease: 'Service not available',
       confidence: 0,
       treatment: 'Please try again later or refresh the page.',
-      severity: 'Unknown',
+      severity: 'Medium',
       details: 'AI service is not properly initialized.'
     };
   }
@@ -534,11 +532,11 @@ export const analyzeCropDisease = async (imageData: string): Promise<{
   while (retryCount <= maxRetries) {
     try {
       console.log(`Disease analysis attempt ${retryCount + 1}/${maxRetries + 1}`);
-      
-      const mimeType = imageData.startsWith('data:image/png') ? 'image/png' : 
-                       imageData.startsWith('data:image/jpeg') ? 'image/jpeg' : 
-                       imageData.startsWith('data:image/jpg') ? 'image/jpeg' : 'image/png';
-      
+
+      const mimeType = imageData.startsWith('data:image/png') ? 'image/png' :
+        imageData.startsWith('data:image/jpeg') ? 'image/jpeg' :
+          imageData.startsWith('data:image/jpg') ? 'image/jpeg' : 'image/png';
+
       const imagePart = {
         inlineData: {
           data: imageData.split(',')[1],
@@ -554,47 +552,47 @@ export const analyzeCropDisease = async (imageData: string): Promise<{
           maxOutputTokens: 1024,
         },
       });
-      
+
       const response = result.response;
       let text = response.text();
-      
+
       if (!text || text.trim().length === 0) {
         throw new Error('Empty response from Gemini');
       }
-      
+
       console.log('Raw response length:', text.length);
-      
+
       // Clean up the response
       text = text.trim();
-      
+
       // Remove any markdown formatting
       text = text.replace(/^```json\s*/i, '').replace(/\s*```$/i, '');
       text = text.replace(/^```\s*/i, '').replace(/\s*```$/i, '');
-      
+
       // Find JSON object boundaries
       const startIndex = text.indexOf('{');
       const lastIndex = text.lastIndexOf('}');
-      
+
       if (startIndex === -1 || lastIndex === -1 || startIndex >= lastIndex) {
         throw new Error('No valid JSON object found in response');
       }
-      
+
       // Extract the JSON part
       const jsonText = text.substring(startIndex, lastIndex + 1);
-      
+
       // Validate basic JSON structure
       if (!jsonText.includes('"disease"') || !jsonText.includes('"confidence"')) {
         throw new Error('Response missing required fields');
       }
-      
+
       // Parse and validate
       const analysisResult = JSON.parse(jsonText);
-      
+
       // Validate required fields
       if (!analysisResult.disease || typeof analysisResult.confidence !== 'number') {
         throw new Error('Invalid response structure');
       }
-      
+
       // Normalize and validate fields
       const validatedResult = {
         disease: String(analysisResult.disease).trim(),
@@ -603,13 +601,13 @@ export const analyzeCropDisease = async (imageData: string): Promise<{
         severity: ['Low', 'Medium', 'High'].includes(analysisResult.severity) ? analysisResult.severity : 'Medium',
         details: String(analysisResult.details || 'Disease analysis completed.').trim()
       };
-      
+
       console.log('Disease analysis completed successfully:', validatedResult.disease);
       return validatedResult;
-      
+
     } catch (error: any) {
       console.error(`Attempt ${retryCount + 1} failed:`, error.message);
-      
+
       if (retryCount >= maxRetries) {
         console.error('All disease analysis attempts failed');
         return {
@@ -620,7 +618,7 @@ export const analyzeCropDisease = async (imageData: string): Promise<{
           details: 'The AI analysis could not be completed. This may be due to image quality, lighting, or service limitations.'
         };
       }
-      
+
       // Wait before retry with exponential backoff
       const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
       await new Promise(resolve => setTimeout(resolve, delay));
@@ -674,18 +672,18 @@ export const analyzePestImage = async (imageData: string, language: string = 'en
     
     Only return the JSON object, nothing else. Do not include any markdown formatting or code blocks.
   `;
-  
+
   try {
     const result = await analyzeImage(imageData, prompt);
     console.log('Raw pesticide analysis response:', result);
-    
+
     // Clean up the response to handle potential formatting issues
     const cleanedResult = result.replace(/```json|```/g, '').trim();
-    
+
     // Parse the JSON response
     try {
       const parsedResult = JSON.parse(cleanedResult);
-      
+
       // Normalize severity to one of the accepted values
       let severity: 'Low' | 'Medium' | 'High' = 'Medium';
       if (parsedResult.severity) {
@@ -694,7 +692,7 @@ export const analyzePestImage = async (imageData: string, language: string = 'en
         else if (severityStr === 'high') severity = 'High';
         else severity = 'Medium';
       }
-      
+
       return {
         pestType: parsedResult.pestType || 'Unknown',
         pesticideRecommendations: parsedResult.pesticideRecommendations || 'No specific recommendations available',
@@ -705,14 +703,14 @@ export const analyzePestImage = async (imageData: string, language: string = 'en
     } catch (parseError) {
       console.error('Error parsing pesticide analysis response:', parseError);
       console.error('Raw response:', result);
-      
+
       // Try to extract information from non-JSON response
       const pestTypeMatch = result.match(/pest\s*type[:\s]+([^\n.,]+)/i);
       const recommendationsMatch = result.match(/pesticide\s*recommendations[:\s]+([^\n]+)/i);
       const organicMatch = result.match(/organic\s*alternatives[:\s]+([^\n]+)/i);
       const preventionMatch = result.match(/prevention\s*tips[:\s]+([^\n]+)/i);
       const severityMatch = result.match(/severity[:\s]+(Low|Medium|High)/i);
-      
+
       // Fallback with extracted values if possible
       return {
         pestType: pestTypeMatch ? pestTypeMatch[1].trim() : 'Analysis Error',
@@ -724,7 +722,7 @@ export const analyzePestImage = async (imageData: string, language: string = 'en
     }
   } catch (error) {
     console.error('Error in pesticide analysis:', error);
-    
+
     // Return a response indicating analysis failure
     return {
       pestType: 'Analysis Failed',
@@ -819,7 +817,7 @@ export const getFarmingRecommendation = async (
   while (retryCount <= maxRetries) {
     try {
       console.log(`Farming recommendation attempt ${retryCount + 1}/${maxRetries + 1}`);
-      
+
       const result = await geminiModel.generateContent(promptContext, {
         generationConfig: {
           temperature: 0.3,
@@ -828,23 +826,23 @@ export const getFarmingRecommendation = async (
           maxOutputTokens: 1024,
         },
       });
-      
+
       const response = result.response;
       const text = response.text();
-      
+
       if (!text || text.trim().length === 0) {
         throw new Error('Empty response from Gemini');
       }
-      
+
       console.log('Successfully generated farming recommendation, length:', text.length);
       return text.trim();
-      
+
     } catch (error: any) {
       console.error(`Farming recommendation attempt ${retryCount + 1} failed:`, error.message);
-      
+
       if (retryCount >= maxRetries) {
         console.error('All farming recommendation attempts failed');
-        
+
         // Provide error messages in the appropriate language
         if (language === 'te') {
           return 'క్షమించండి, ప్రస్తుతం వ్యక్తిగతీకరించిన సిఫార్సును రూపొందించడం సాధ్యం కాలేదు. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.';
@@ -854,7 +852,7 @@ export const getFarmingRecommendation = async (
           return 'I apologize, but I was unable to generate a personalized recommendation at this time. Please try again later.';
         }
       }
-      
+
       // Wait before retry with exponential backoff
       const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
       await new Promise(resolve => setTimeout(resolve, delay));
@@ -871,8 +869,8 @@ export const getFarmingRecommendation = async (
  * @returns Structured analysis of the farm
  */
 export async function analyzeFarmImage(
-  imageData: string, 
-  farmDetails: any, 
+  imageData: string,
+  farmDetails: any,
   customPrompt?: string
 ): Promise<any> {
   try {
@@ -963,12 +961,12 @@ export async function analyzeFarmImage(
 
     const response = await result.response;
     const text = response.text();
-    
+
     // Extract JSON from the response
-    const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || 
-                      text.match(/```\n([\s\S]*?)\n```/) || 
-                      text.match(/{[\s\S]*}/);
-                      
+    const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) ||
+      text.match(/```\n([\s\S]*?)\n```/) ||
+      text.match(/{[\s\S]*}/);
+
     if (jsonMatch) {
       try {
         const jsonStr = jsonMatch[1] || jsonMatch[0];
