@@ -134,22 +134,22 @@ const sidebarItems: SidebarItem[] = [
     translationKey: 'common.cropAdvisor',
     category: 'tools'
   },
-  // { 
-  //   name: 'Market', 
-  //   icon: BarChart2, 
-  //   href: '/market',
-  //   color: 'bg-agri-amber/10 text-agri-amber',
-  //   translationKey: 'common.market',
-  //   category: 'tools'
-  // },
-  // { 
-  //   name: 'Weather', 
-  //   icon: CloudSun, 
-  //   href: '/weather',
-  //   color: 'bg-agri-lightBlue/10 text-agri-lightBlue',
-  //   translationKey: 'common.weather',
-  //   category: 'tools'
-  // },
+  { 
+    name: 'Market', 
+    icon: BarChart2, 
+    href: '/market',
+    color: 'bg-agri-amber/10 text-agri-amber',
+    translationKey: 'common.market',
+    category: 'tools'
+  },
+  { 
+    name: 'Weather', 
+    icon: CloudSun, 
+    href: '/weather',
+    color: 'bg-agri-lightBlue/10 text-agri-lightBlue',
+    translationKey: 'common.weather',
+    category: 'tools'
+  },
   { 
     name: 'AgriBot', 
     icon: Bot, 

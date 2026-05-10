@@ -991,58 +991,7 @@ const Index = () => {
         </motion.div>
 
         {/* AgriBuddy Feature Announcement */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-6 bg-gradient-to-r from-green-500 to-blue-600 rounded-xl shadow-lg overflow-hidden border-2 border-green-300/50"
-        >
-          <div className="p-6 text-white relative">
-            {/* Animated background elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16 animate-pulse" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12 animate-pulse delay-1000" />
-            
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between">
-              <div className="flex-1 mb-4 md:mb-0">
-                <div className="flex items-center mb-3">
-                  <div className="p-2 bg-white/20 rounded-full mr-3 animate-bounce">
-                    <Sprout className="h-8 w-8 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold flex items-center gap-2">
-                      🚀 {t('homepage.introducingAgriBuddy')}
-                      <span className="bg-yellow-400 text-green-800 text-xs font-bold px-2 py-1 rounded-full animate-pulse">
-                        {t('homepage.new')}
-                      </span>
-                    </h2>
-                    <p className="text-white/90 text-sm">{t('homepage.aiPoweredCropJourney')}</p>
-                  </div>
-                </div>
-                <p className="text-white/95 max-w-2xl mb-4">
-                  🤖 {t('homepage.agriBuddyDescription')}
-                </p>
-                <div className="flex flex-wrap gap-2 text-sm">
-                  <span className="bg-white/20 px-3 py-1 rounded-full">✨ {t('homepage.aiGeneratedWorkflows')}</span>
-                  <span className="bg-white/20 px-3 py-1 rounded-full">📊 {t('homepage.interactiveTimeline')}</span>
-                  <span className="bg-white/20 px-3 py-1 rounded-full">🌤️ {t('homepage.weatherIntegration')}</span>
-                  <span className="bg-white/20 px-3 py-1 rounded-full">✅ {t('homepage.smartTaskManagement')}</span>
-                </div>
-              </div>
-              
-              <div className="flex flex-col gap-3">
-                <Button 
-                  onClick={() => navigate('/agribuddy')} 
-                  className="bg-white text-green-600 hover:bg-white/90 transition-all duration-300 font-semibold px-6 py-3 shadow-lg hover:shadow-xl transform hover:scale-105"
-                >
-                  <Sprout className="h-5 w-5 mr-2" />
-                  {t('homepage.startYourJourney')}
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-                <p className="text-white/70 text-xs text-center">{t('homepage.freeForAllFarmers')}</p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        
 
         {/* Farm Monitoring Component */}
         <motion.div
@@ -1068,33 +1017,7 @@ const Index = () => {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* AgriBuddy - Featured NEW Card */}
-              <motion.div 
-                whileHover={{ scale: 1.05, boxShadow: "0 15px 35px -5px rgba(34, 197, 94, 0.3)" }}
-                whileTap={{ scale: 0.98 }}
-                className="bg-gradient-to-br from-green-400/30 to-blue-500/30 backdrop-blur-sm rounded-lg p-4 cursor-pointer hover:from-green-400/40 hover:to-blue-500/40 transition-all duration-300 border-2 border-green-300/60 relative overflow-hidden"
-                onClick={() => navigate('/agribuddy')}
-              >
-                {/* Animated background effect */}
-                <div className="absolute -top-10 -right-10 w-20 h-20 bg-gradient-to-br from-green-300/40 to-blue-400/40 rounded-full animate-pulse" />
-                <div className="absolute top-2 right-2 bg-gradient-to-r from-green-500 to-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-bounce">
-                  🚀 {t('homepage.new')}
-                </div>
-                
-                <div className="flex items-center mb-3">
-                  <div className="p-2 bg-gradient-to-r from-green-500/40 to-blue-500/40 rounded-full mr-3 shadow-lg">
-                    <Sprout className="h-6 w-6 text-white animate-pulse" />
-                  </div>
-                  <h3 className="font-bold text-lg text-white">{t('homepage.agriBuddyCardTitle')}</h3>
-                </div>
-                <p className="text-sm text-white/95 mb-4 font-medium">🤖 {t('homepage.agriBuddyCardDescription')}</p>
-                <div className="flex items-center bg-gradient-to-r from-green-500/40 to-blue-500/40 rounded-full px-3 py-2 w-fit text-white font-semibold text-sm mt-2 hover:from-green-500/50 hover:to-blue-500/50 transition-all shadow-lg">
-                  <span>{t('homepage.startJourney')}</span>
-                  <ArrowRight className="h-4 w-4 ml-2 animate-pulse" />
-                </div>
-                <div className="absolute bottom-2 right-2 text-xs text-white/70 font-medium">
-                  {t('homepage.aiAssistant')}
-                </div>
-              </motion.div>
+              
 
               <motion.div 
                 whileHover={{ scale: 1.05, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
